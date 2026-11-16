@@ -44,7 +44,7 @@ export default function Dashboard() {
           </Button>
         </div>
       </header>
-      <main className="relative mx-auto max-w-4xl px-6 py-16 animate-fade-up">
+      <main className="relative mx-auto max-w-6xl px-6 py-16 animate-fade-up">
         <h1 className="break-all text-3xl font-semibold tracking-tight sm:text-4xl">
           Hi <span className="text-gradient">{user.email}</span>
         </h1>
@@ -59,7 +59,7 @@ export default function Dashboard() {
             無法載入你的訂閱狀態，請重新整理再試。Couldn't load your subscriptions.
           </p>
         )}
-        <div className="mt-8 grid gap-6 sm:grid-cols-2">
+        <div className="mt-8 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
           {PLANS.map((plan) => (
             <PlanCard
               key={plan.name}

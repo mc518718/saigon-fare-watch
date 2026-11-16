@@ -71,11 +71,12 @@ describe("App routing", () => {
     vi.stubGlobal("fetch", fetchMock);
     renderAt("/app");
     expect(await screen.findByText("me@example.com")).toBeInTheDocument();
-    // Tokyo is already subscribed (badge + current target + update button); Seoul is not.
+    // Tokyo is already subscribed (badge + current target + update button); the other two are not.
     expect(await screen.findByText("已訂閱")).toBeInTheDocument();
     expect(screen.getByText("NT$8,000")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "更新目標價" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "開始追蹤" })).toBeInTheDocument();
+    expect(screen.getAllByRole("button", { name: "開始追蹤" })).toHaveLength(2);
+    expect(screen.getByText("胡志明市 ✈ 台北")).toBeInTheDocument();
     expect(String(fetchMock.mock.calls[0]?.[0])).toContain("/subscriptions?email=me%40example.com");
     vi.unstubAllGlobals();
   });
