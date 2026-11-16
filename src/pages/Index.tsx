@@ -1,20 +1,9 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { Link } from "react-router";
 import { BellRing, Radar, XCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/Logo";
 import { Reveal } from "@/components/Reveal";
-
-export const Route = createFileRoute("/")({
-  head: () => ({
-    meta: [
-      { title: "Flight Price Notifier — 機票降價通知 from Saigon" },
-      { name: "description", content: "Set a route and a target price — we email you when the fare from Ho Chi Minh City drops." },
-      { property: "og:title", content: "Flight Price Notifier — 機票降價通知" },
-      { property: "og:description", content: "設定航線與目標價，機票降價就通知你。Fare alerts for flights from Saigon." },
-    ],
-  }),
-  component: Index,
-});
+import { usePageMeta } from "@/hooks/use-page-meta";
 
 const features = [
   { icon: Radar, title: "盯緊熱門航線", en: "Always-on route watching", body: "持續監控胡志明市出發的熱門航線（香港、台北、北京、首爾），自動抓最低票價。" },
@@ -24,7 +13,15 @@ const features = [
 
 const routes = ["SGN → HKG", "SGN → TPE", "SGN → PEK", "SGN → ICN"];
 
-function Index() {
+export default function Index() {
+  usePageMeta({
+    title: "Flight Price Notifier — 機票降價通知 from Saigon",
+    description:
+      "Set a route and a target price — we email you when the fare from Ho Chi Minh City drops.",
+    ogTitle: "Flight Price Notifier — 機票降價通知",
+    ogDescription: "設定航線與目標價，機票降價就通知你。Fare alerts for flights from Saigon.",
+  });
+
   return (
     <div className="relative min-h-screen overflow-hidden bg-background">
       <div className="pointer-events-none absolute inset-0 bg-gradient-hero" />

@@ -31,5 +31,6 @@ use the editor.
 
 ## Project rules
 - Backend auth only: use built-in auth users; no custom app tables in the backend (app data will live in an external AWS store later).
-- Protected pages live under src/routes/_authenticated/ (client-only gate redirecting to /auth); public pages are top-level.
+- Plain Vite + React SPA (no SSR, no server code) deployed as static files on Vercel; routing is React Router, defined in src/routes.tsx.
+- Pages live in src/pages/. Protected pages go under the `authenticated` route in src/routes.tsx (client-only loader gate in src/lib/auth.ts redirecting to /auth); public pages are top-level.
 - React component files use PascalCase names.

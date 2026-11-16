@@ -1,32 +1,28 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useQueryClient } from "@tanstack/react-query";
+import { useNavigate, useRouteLoaderData } from "react-router";
 import { LogOut, Radar } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/Logo";
+import { usePageMeta } from "@/hooks/use-page-meta";
+import { AUTHENTICATED_ROUTE_ID, type AuthenticatedData } from "@/lib/auth";
 
-export const Route = createFileRoute("/_authenticated/app")({
-  head: () => ({
-    meta: [
-      { title: "Dashboard — Flight Price Notifier" },
-      { name: "description", content: "Your Flight Price Notifier dashboard." },
-      { property: "og:title", content: "Dashboard — Flight Price Notifier" },
-      { property: "og:description", content: "Your flight fare tracking dashboard." },
-      { name: "robots", content: "noindex" },
-    ],
-  }),
-  component: AppPage,
-});
-
-function AppPage() {
-  const { user } = Route.useRouteContext();
-  const { queryClient } = Route.useRouteContext();
+export default function Dashboard() {
+  usePageMeta({
+    title: "Dashboard — Flight Price Notifier",
+    description: "Your Flight Price Notifier dashboard.",
+    ogDescription: "Your flight fare tracking dashboard.",
+    robots: "noindex",
+  });
+  const { user } = useRouteLoaderData(AUTHENTICATED_ROUTE_ID) as AuthenticatedData;
+  const queryClient = useQueryClient();
   const navigate = useNavigate();
 
   async function signOut() {
     await queryClient.cancelQueries();
     queryClient.clear();
     await supabase.auth.signOut();
-    navigate({ to: "/auth", replace: true });
+    navigate("/auth", { replace: true });
   }
 
   return (
