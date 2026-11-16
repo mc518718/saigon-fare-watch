@@ -28,3 +28,8 @@ use the editor.
   own key and store it in Secrets.
 - **Secrets.** Lovable manages them. Do not put secret values in the repo.
 <!-- LOVABLE:END -->
+
+## Project rules
+- Backend auth only: use built-in auth users; no custom app tables in the backend (app data will live in an external AWS store later).
+- Protected pages live under src/routes/_authenticated/ (client-only gate redirecting to /auth); public pages are top-level.
+- React component files use PascalCase names.
