@@ -12,7 +12,7 @@ Card 1: 「盯緊熱門航線 (Always-on route watching)」 — 持續監控胡�
 Card 2: 「達標自動通知 (Target-price email alerts)」 — 低於你設定的目標價，就寄 email 提醒你，附上立即訂購連結。
 Card 3: 「隨時取消 (Cancel anytime)」 — 月訂閱制，不想用隨時停，沒有綁約。
 Footer with copyright 「© 2026 Saigon Flight Price Notifier」.
-Authentication using Lovable's built-in Supabase-style auth (use whatever auth backend Lovable provides by default — Lovable Cloud is fine for this v1; we'll swap to a user-owned Supabase project in a later step):
+Authentication using Supabase Auth on the project owner's own Supabase project:
 
 Sign Up page with email + password
 Sign In page with email + password
@@ -58,8 +58,8 @@ A plain Vite + React single-page app — no SSR and no server code.
 
 - `index.html` → `src/main.tsx` → React Router routes in `src/routes.tsx`
 - Pages in `src/pages/`: `/` (landing), `/auth` (sign in), `/signup` (sign up), `/app` (dashboard, signed-in users only). `/sign-in` and `/sign-up` redirect to the auth pages.
-- Auth runs in the browser against Supabase (`src/integrations/supabase/client.ts`), configured by `VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHABLE_KEY`.
+- Auth runs in the browser against your own Supabase project. The single client in `src/integrations/supabase/client.ts` reads `VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHABLE_KEY` (the publishable key is what Supabase used to call the anon key). See `.env.example`.
 
 ## Deploying to Vercel
 
-`npm run build` writes the static site to `dist/`. `vercel.json` sets the build command and output directory and rewrites every path to `index.html`, so deep links such as `/app` resolve client-side. Import the repository in Vercel and deploy; no extra settings are needed. If you remove `.env` from the repository, add the two `VITE_SUPABASE_*` variables in the Vercel project settings.
+`npm run build` writes the static site to `dist/`. `vercel.json` sets the build command and output directory and rewrites every path to `index.html`, so deep links such as `/app` resolve client-side. Import the repository in Vercel, then add `VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHABLE_KEY` under Project Settings → Environment Variables (same values as `.env`) and redeploy. In Supabase, add the Vercel domain under Authentication → URL Configuration so email confirmation links can redirect back to `/app`.
