@@ -1,11 +1,13 @@
-import { useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useNavigate, useRouteLoaderData } from "react-router";
-import { LogOut, Radar } from "lucide-react";
+import { LogOut } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/Logo";
+import { PlanCard } from "@/components/PlanCard";
 import { usePageMeta } from "@/hooks/use-page-meta";
 import { AUTHENTICATED_ROUTE_ID, type AuthenticatedData } from "@/lib/auth";
+import { listSubscriptions, PLANS, subscriptionsQueryKey } from "@/lib/subscriptions";
 
 export default function Dashboard() {
   usePageMeta({
@@ -17,6 +19,12 @@ export default function Dashboard() {
   const { user } = useRouteLoaderData(AUTHENTICATED_ROUTE_ID) as AuthenticatedData;
   const queryClient = useQueryClient();
   const navigate = useNavigate();
+  const email = user.email ?? "";
+  const subscriptions = useQuery({
+    queryKey: subscriptionsQueryKey(email),
+    queryFn: () => listSubscriptions(email),
+    enabled: Boolean(email),
+  });
 
   async function signOut() {
     await queryClient.cancelQueries();
@@ -36,18 +44,30 @@ export default function Dashboard() {
           </Button>
         </div>
       </header>
-      <main className="relative mx-auto max-w-3xl px-6 py-20 animate-fade-up">
+      <main className="relative mx-auto max-w-4xl px-6 py-16 animate-fade-up">
         <h1 className="break-all text-3xl font-semibold tracking-tight sm:text-4xl">
           Hi <span className="text-gradient">{user.email}</span>
         </h1>
-        <div className="mt-10 rounded-2xl border border-border bg-card/70 p-8 backdrop-blur">
-          <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-xl bg-accent">
-            <Radar className="h-5 w-5 text-primary-glow" />
-          </div>
-          <p className="text-lg">你的航線追蹤儀表板即將上線 — 下一個里程碑會加上訂閱航線的功能。</p>
-          <p className="mt-2 text-sm text-muted-foreground">
-            Your dashboard is coming soon. Route-subscription will be added in the next milestone.
+        <p className="mt-4 text-muted-foreground">
+          選一條航線、設定台幣目標價 — 票價達標時我們會寄信到這個信箱。
+          <span className="block text-sm">
+            Pick a route and a TWD target. We email you when the fare drops to it.
+          </span>
+        </p>
+        {subscriptions.isError && (
+          <p role="alert" className="mt-6 text-sm text-destructive">
+            無法載入你的訂閱狀態，請重新整理再試。Couldn't load your subscriptions.
           </p>
+        )}
+        <div className="mt-8 grid gap-6 sm:grid-cols-2">
+          {PLANS.map((plan) => (
+            <PlanCard
+              key={plan.name}
+              plan={plan}
+              email={email}
+              subscription={subscriptions.data?.find((s) => s.route === plan.route)}
+            />
+          ))}
         </div>
       </main>
     </div>

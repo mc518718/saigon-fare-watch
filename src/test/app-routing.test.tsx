@@ -54,8 +54,30 @@ describe("App routing", () => {
       data: { user: { id: "1", email: "me@example.com" } },
       error: null,
     });
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        subscriptions: [
+          {
+            email: "me@example.com",
+            route: "TPE-TYO",
+            plan_name: "tokyo",
+            target_price: 8000,
+            currency: "TWD",
+          },
+        ],
+      }),
+    });
+    vi.stubGlobal("fetch", fetchMock);
     renderAt("/app");
     expect(await screen.findByText("me@example.com")).toBeInTheDocument();
+    // Tokyo is already subscribed (badge + current target + update button); Seoul is not.
+    expect(await screen.findByText("已訂閱")).toBeInTheDocument();
+    expect(screen.getByText("NT$8,000")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "更新目標價" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "開始追蹤" })).toBeInTheDocument();
+    expect(String(fetchMock.mock.calls[0]?.[0])).toContain("/subscriptions?email=me%40example.com");
+    vi.unstubAllGlobals();
   });
 
   it("shows the 404 page for unknown paths", async () => {
